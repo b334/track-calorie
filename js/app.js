@@ -26,6 +26,26 @@ class CalorieTracker {
     this._render();
   }
 
+  removeMeal(id) {
+    const removeItemIndex = this._meals.findIndex((meal) => meal.id === id);
+    if (removeItemIndex !== -1) {
+      const removeItemCalories = this._meals[removeItemIndex].calories;
+      this._totalCalories -= removeItemCalories;
+      this._meals.splice(removeItemIndex, 1);
+      this._render();
+    }
+  }
+
+  removeWorkout(id) {
+    const removeItemIndex = this._workouts.findIndex((meal) => meal.id === id);
+    if (removeItemIndex !== -1) {
+      const removeItemCalories = this._workouts[removeItemIndex].calories;
+      this._totalCalories += removeItemCalories;
+      this._workouts.splice(removeItemIndex, 1);
+      this._render();
+    }
+  }
+
   // Private methods
   _displayCaloriesTotal() {
     document.getElementById('calories-total').textContent = this._totalCalories;
@@ -73,6 +93,7 @@ class CalorieTracker {
     const mealItemsEl = document.getElementById('meal-items');
     const mealItemEl = document.createElement('div');
     mealItemEl.className = 'card my-2';
+    mealItemEl.setAttribute('data-id', meal.id);
     mealItemEl.innerHTML = `     
       <div class="card-body">
         <div class="d-flex align-items-center justify-content-between">
@@ -91,6 +112,8 @@ class CalorieTracker {
     const workoutItemsEl = document.getElementById('workout-items');
     const workoutItemEl = document.createElement('div');
     workoutItemEl.className = 'card my-2';
+    workoutItemEl.setAttribute('data-id', workout.id);
+
     workoutItemEl.innerHTML = `     
       <div class="card-body">
         <div class="d-flex align-items-center justify-content-between">
@@ -136,6 +159,8 @@ class App {
     // add eventlisteners
     document.getElementById('meal-form').addEventListener('submit', this._newItem.bind(this, 'meal'));
     document.getElementById('workout-form').addEventListener('submit', this._newItem.bind(this, 'workout'));
+    document.getElementById('meal-items').addEventListener('click', this._removeItem.bind(this, 'meal'));
+    document.getElementById('workout-items').addEventListener('click', this._removeItem.bind(this, 'workout'));
   }
 
   _newItem(type, e) {
@@ -159,6 +184,16 @@ class App {
     calories.value = '';
     const collapseItem = document.getElementById(`collapse-${type}`);
     const bsCollapse = new bootstrap.Collapse(collapseItem, { toggle: true });
+  }
+
+  _removeItem(type, e) {
+    if (e.target.classList.contains('delete') || e.target.classList.contains('fa-xmark')) {
+      if (confirm('Do you want to delete the item?')) {
+        const id = e.target.closest('.card').getAttribute('data-id');
+        type === 'meal' ? this._calorieTracker.removeMeal(id) : this._calorieTracker.removeWorkout(id);
+        e.target.closest('.card').remove();
+      }
+    }
   }
 }
 
