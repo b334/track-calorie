@@ -59,6 +59,7 @@ class CalorieTracker {
     this._meals = [];
     this._workouts = [];
     this._totalCalories = 0;
+    Storage.clearAll();
     this._render();
   }
 
@@ -256,6 +257,10 @@ class Storage {
     const workouts = Storage.getWorkouts();
     workouts.splice(index, 1);
     localStorage.setItem('workouts', JSON.stringify(workouts));
+  }
+
+  static clearAll() {
+    localStorage.clear();
   }
 }
 
