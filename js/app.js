@@ -46,6 +46,13 @@ class CalorieTracker {
     }
   }
 
+  reset() {
+    this._meals = [];
+    this._workouts = [];
+    this._totalCalories = 0;
+    this._render();
+  }
+
   // Private methods
   _displayCaloriesTotal() {
     document.getElementById('calories-total').textContent = this._totalCalories;
@@ -161,6 +168,9 @@ class App {
     document.getElementById('workout-form').addEventListener('submit', this._newItem.bind(this, 'workout'));
     document.getElementById('meal-items').addEventListener('click', this._removeItem.bind(this, 'meal'));
     document.getElementById('workout-items').addEventListener('click', this._removeItem.bind(this, 'workout'));
+    document.getElementById('filter-meals').addEventListener('input', this._filterItems.bind(this, 'meal'));
+    document.getElementById('filter-workouts').addEventListener('input', this._filterItems.bind(this, 'workout'));
+    document.getElementById('reset').addEventListener('click', this._reset.bind(this));
   }
 
   _newItem(type, e) {
@@ -194,6 +204,31 @@ class App {
         e.target.closest('.card').remove();
       }
     }
+  }
+
+  _filterItems(type, e) {
+    const text = e.target.value.toLowerCase();
+    document.querySelectorAll(`#${type}-items>.card`).forEach((item) => {
+      const name = item.firstElementChild.firstElementChild.textContent;
+      if (name.toLowerCase().indexOf(text) !== -1) {
+        item.style.display = 'block';
+      } else {
+        item.style.display = 'none';
+      }
+    });
+  }
+
+  _clearItems(type) {
+    const lists = document.getElementById(`${type}-items`);
+    while (lists.firstChild) {
+      lists.firstChild.remove();
+    }
+    document.getElementById(`filter-${type}s`).value = '';
+  }
+  _reset() {
+    this._clearItems('meal');
+    this._clearItems('workout');
+    this._calorieTracker.reset();
   }
 }
 
